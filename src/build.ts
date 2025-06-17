@@ -240,9 +240,15 @@ async function build(): Promise<void> {
     // Log some statistics
     const stats = {
       totalKeys: Object.keys(mergedConfig).length,
-      hasTooltips: Array.isArray(mergedConfig['tooltips']) ? (mergedConfig['tooltips'] as unknown[]).length : 0,
-      hasBlocks: Array.isArray(mergedConfig['blocks']) ? (mergedConfig['blocks'] as unknown[]).length : 0,
-      hasPalette: mergedConfig['palette'] ? Object.keys(mergedConfig['palette'] as object).length : 0,
+      hasTooltips: Array.isArray(mergedConfig['tooltips'])
+        ? (mergedConfig['tooltips'] as unknown[]).length
+        : 0,
+      hasBlocks: Array.isArray(mergedConfig['blocks'])
+        ? (mergedConfig['blocks'] as unknown[]).length
+        : 0,
+      hasPalette: mergedConfig['palette']
+        ? Object.keys(mergedConfig['palette'] as object).length
+        : 0,
     };
 
     console.log('\n📊 Configuration statistics:');
