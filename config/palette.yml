@@ -1,0 +1,66 @@
+palette:
+  # Base colors
+  transparent: "transparent"
+
+  # Grayscale family
+  gray_lighter: "#eff2f6"
+  gray_light: "#cfd8e3"
+  gray: "#557090"
+  gray_dark: "#2f3e50"
+  gray_darker: "#090c10"
+
+  # Red family
+  red_lighter: "#fde8eb"
+  red_light: "#f8bac4"
+  red: "#dd1737"
+  red_dark: "#730c1d"
+  red_darker: "#170206"
+
+  # Orange family
+  orange_lighter: "#fff3e5"
+  orange_light: "#ffddb3"
+  orange: "#ff8c00"
+  orange_dark: "#804600"
+  orange_darker: "#1a0e00"
+
+  # Yellow family
+  yellow_lighter: "#fffbe5"
+  yellow_light: "#fff3b3"
+  yellow: "#ffd700"
+  yellow_dark: "#806c00"
+  yellow_darker: "#1a1600"
+
+  # Green family
+  green_lighter: "#ebfaf2"
+  green_light: "#c2f0d7"
+  green: "#259459"
+  green_dark: "#19663d"
+  green_darker: "#05140c"
+
+  # Teal family
+  teal_lighter: "#e8fcfc"
+  teal_light: "#bbf6f5"
+  teal: "#149794"
+  teal_dark: "#0f716e"
+  teal_darker: "#031716"
+
+  # Blue family
+  blue_lighter: "#e6f3ff"
+  blue_light: "#b4dafe"
+  blue: "#0376e2"
+  blue_dark: "#02427e"
+  blue_darker: "#000d19"
+
+  # Purple family
+  purple_lighter: "#efe9fb"
+  purple_light: "#cebef3"
+  purple: "#6d3ddc"
+  purple_dark: "#2f146c"
+  purple_darker: "#090416"
+
+  # Magenta family
+  magenta_lighter: "#faeaf2"
+  magenta_light: "#f1c0d9"
+  magenta: "#d53f8c"
+  magenta_dark: "#691741"
+  magenta_darker: "#15050d"

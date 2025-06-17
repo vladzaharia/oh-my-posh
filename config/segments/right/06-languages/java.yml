@@ -1,0 +1,21 @@
+blocks:
+  - type: rprompt
+    alignment: right
+    overflow: hide
+    segments:
+      # Java runtime - diamond style when no project segment
+      - type: java
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4 "
+        background: "p:orange"
+        foreground: "p:orange_darker"
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }} \ue738 {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} {{ end }}"
+
+      # Java runtime - powerline style when project segment exists
+      - type: java
+        style: diamond
+        trailing_diamond: "\ue0b4 "
+        background: "p:orange"
+        foreground: "p:orange_darker"
+        template: "{{ if and (.Segments.Project.Version) (.Full) }} \ue738 {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} {{ end }}"

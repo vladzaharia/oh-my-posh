@@ -1,0 +1,12 @@
+blocks:
+  - type: prompt
+    alignment: left
+    segments:
+      # Shell (from $shell)
+      - type: shell
+        style: diamond
+        powerline_symbol: "\ue0b0"
+        trailing_diamond: "\ue0b4"
+        background: "p:purple"
+        foreground: "p:purple_lighter"
+        template: " {{ .Name }} "

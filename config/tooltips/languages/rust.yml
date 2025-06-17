@@ -1,0 +1,50 @@
+tooltips:
+  # Rust tooltip - version standalone when no project or error
+  - type: rust
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:red"
+    foreground: "p:red_lighter"
+    template: "{{ if and (not .Error) (not .Segments.Project.Version) }} \ue7a8 {{ .Full }} {{ end }}"
+    tips:
+      - rust
+      - rustc
+      - cargo
+
+  # Rust tooltip - project + version connected pills
+  - type: project
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b0"
+    background: "p:gray"
+    foreground: "p:gray_light"
+    template: "{{ if and .Version .Segments.Rust.Full }}\uf487 {{ .Version }} {{ end }}"
+    tips:
+      - rust
+      - rustc
+      - cargo
+
+  - type: rust
+    style: diamond
+    trailing_diamond: "\ue0b4"
+    background: "p:red_light"
+    foreground: "p:red"
+    template: "{{ if and (not .Error) .Segments.Project.Version }} \ue7a8 {{ .Full }} {{ end }}"
+    tips:
+      - rust
+      - rustc
+      - cargo
+
+  # Rust tooltip - error state
+  - type: rust
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:red"
+    foreground: "p:red_lighter"
+    template: "{{ if .Error }} \ue7a8 {{ .Error }} {{ end }}"
+    tips:
+      - rust
+      - rustc
+      - cargo

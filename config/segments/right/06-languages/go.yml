@@ -1,0 +1,21 @@
+blocks:
+  - type: rprompt
+    alignment: right
+    overflow: hide
+    segments:
+      # Go runtime - diamond style when no project segment
+      - type: go
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4 "
+        background: "p:teal"
+        foreground: "p:teal_lighter"
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }} \ue626 {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} {{ end }}"
+
+      # Go runtime - powerline style when project segment exists
+      - type: go
+        style: diamond
+        trailing_diamond: "\ue0b4 "
+        background: "p:teal"
+        foreground: "p:teal_lighter"
+        template: "{{ if and (.Segments.Project.Version) (.Full) }} \ue626 {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} {{ end }}"

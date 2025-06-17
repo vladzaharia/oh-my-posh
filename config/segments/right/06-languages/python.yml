@@ -1,0 +1,21 @@
+blocks:
+  - type: rprompt
+    alignment: right
+    overflow: hide
+    segments:
+      # Python runtime - diamond style when no project segment
+      - type: python
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4 "
+        background: "p:blue"
+        foreground: "p:blue_lighter"
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }}\ue235 {{ if .Error }}{{ .Error }}{{ else }} {{ .Full }}{{ end }}{{ end }}"
+
+      # Python runtime - powerline style when project segment exists
+      - type: python
+        style: diamond
+        trailing_diamond: "\ue0b4 "
+        background: "p:blue"
+        foreground: "p:blue_lighter"
+        template: "{{ if and (.Segments.Project.Version) (.Full) }}\ue235 {{ if .Error }}{{ .Error }}{{ else }} {{ .Full }}{{ end }}{{ end }}"

@@ -1,0 +1,21 @@
+blocks:
+  - type: rprompt
+    alignment: right
+    overflow: hide
+    segments:
+      # PHP runtime - diamond style when no project segment
+      - type: php
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4 "
+        background: "p:purple"
+        foreground: "p:purple_lighter"
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }} \ue73d {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} {{ end }}"
+
+      # PHP runtime - powerline style when project segment exists
+      - type: php
+        style: diamond
+        trailing_diamond: "\ue0b4 "
+        background: "p:purple"
+        foreground: "p:purple_lighter"
+        template: "{{ if and (.Segments.Project.Version) (.Full) }} \ue73d {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} {{ end }}"

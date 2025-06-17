@@ -1,0 +1,11 @@
+blocks:
+  - type: prompt
+    alignment: left
+    segments:
+      # Username/hostname (only show if not default user or SSH session)
+      - type: session
+        style: powerline
+        powerline_symbol: "\ue0b0"
+        background: "p:blue"
+        foreground: "p:blue_lighter"
+        template: "{{ if or .SSHSession (ne .UserName \"vlad\") }} {{ if .SSHSession }}\uf817 {{ end }}{{ .UserName }}{{ if .SSHSession }}@{{ .HostName }}{{ end }} {{ end }}"

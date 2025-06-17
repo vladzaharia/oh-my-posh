@@ -1,0 +1,40 @@
+tooltips:
+  # Azure tooltip - subscription standalone when no ID
+  - type: az
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4 "
+    background: "p:blue"
+    foreground: "p:blue_lighter"
+    template: "{{ if not .ID }} \uebd8 {{ .Name }} {{ end }}"
+    properties:
+      display_default: false
+    tips:
+      - az
+      - azure
+
+  # Azure tooltip - subscription + ID connected pills
+  - type: az
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b0"
+    background: "p:blue"
+    foreground: "p:blue_lighter"
+    template: "{{ if .ID }} \uebd8 {{ .Name }} {{ end }}"
+    properties:
+      display_default: false
+    tips:
+      - az
+      - azure
+
+  - type: az
+    style: diamond
+    trailing_diamond: "\ue0b4 "
+    background: "p:blue_light"
+    foreground: "p:blue"
+    template: "{{ if .ID }} {{ .ID }} {{ end }}"
+    properties:
+      display_default: false
+    tips:
+      - az
+      - azure

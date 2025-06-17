@@ -1,0 +1,21 @@
+blocks:
+  - type: rprompt
+    alignment: right
+    overflow: hide
+    segments:
+      # Rust runtime - diamond style when no project segment
+      - type: rust
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4 "
+        background: "p:red"
+        foreground: "p:red_lighter"
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }} \ue7a8 {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} {{ end }}"
+
+      # Rust runtime - powerline style when project segment exists
+      - type: rust
+        style: diamond
+        trailing_diamond: "\ue0b4 "
+        background: "p:red"
+        foreground: "p:red_lighter"
+        template: "{{ if and (.Segments.Project.Version) (.Full) }} \ue7a8 {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} {{ end }}"

@@ -1,0 +1,14 @@
+blocks:
+  - type: prompt
+    alignment: left
+    segments:
+      # Directory (from $directory)
+      - type: path
+        style: powerline
+        powerline_symbol: "\ue0b0"
+        background: "p:teal"
+        foreground: "p:teal_lighter"
+        properties:
+          home_icon: "\ue617 "
+          style: agnoster_short
+          max_depth: 1

@@ -1,0 +1,13 @@
+tooltips:
+  # Docker tooltip
+  - type: docker
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:blue"
+    foreground: "p:blue_lighter"
+    template: " \uf308 {{ .Context }} "
+    tips:
+      - docker
+      - docker-compose
+      - podman

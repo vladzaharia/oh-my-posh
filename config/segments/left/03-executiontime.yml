@@ -1,0 +1,14 @@
+blocks:
+  - type: prompt
+    alignment: left
+    segments:
+      # Command duration (only show if > 45s)
+      - type: executiontime
+        style: powerline
+        powerline_symbol: "\ue0b0"
+        background: "p:purple"
+        foreground: "p:purple_lighter"
+        template: " \ueba2 {{ .FormattedMs }} "
+        properties:
+          threshold: 45000
+          style: roundrock

@@ -1,0 +1,58 @@
+tooltips:
+  # Java tooltip - version standalone when no project or error
+  - type: java
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:orange"
+    foreground: "p:orange_darker"
+    template: "{{ if and (not .Error) (not .Segments.Project.Version) }} \ue738 {{ .Full }} {{ end }}"
+    tips:
+      - java
+      - javac
+      - maven
+      - mvn
+      - gradle
+
+  # Java tooltip - project + version connected pills
+  - type: project
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b0"
+    background: "p:gray"
+    foreground: "p:gray_light"
+    template: "{{ if and .Version .Segments.Java.Full }}\uf487 {{ .Version }} {{ end }}"
+    tips:
+      - java
+      - javac
+      - maven
+      - mvn
+      - gradle
+
+  - type: java
+    style: diamond
+    trailing_diamond: "\ue0b4"
+    background: "p:orange_light"
+    foreground: "p:orange"
+    template: "{{ if and (not .Error) .Segments.Project.Version }} \ue738 {{ .Full }} {{ end }}"
+    tips:
+      - java
+      - javac
+      - maven
+      - mvn
+      - gradle
+
+  # Java tooltip - error state
+  - type: java
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:red"
+    foreground: "p:red_lighter"
+    template: "{{ if .Error }} \ue738 {{ .Error }} {{ end }}"
+    tips:
+      - java
+      - javac
+      - maven
+      - mvn
+      - gradle

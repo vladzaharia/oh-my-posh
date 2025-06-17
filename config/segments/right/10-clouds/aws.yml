@@ -1,0 +1,17 @@
+blocks:
+  - type: rprompt
+    alignment: right
+    overflow: hide
+    segments:
+      # === CLOUD/DOCKER/K8S CONTEXT GROUP ===
+
+      # AWS context
+      - type: aws
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4 "
+        background: "p:orange"
+        foreground: "p:orange_darker"
+        template: " \ue7ad {{ .Profile }} "
+        properties:
+          display_default: false

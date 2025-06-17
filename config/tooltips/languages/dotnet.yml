@@ -1,0 +1,46 @@
+tooltips:
+  # .NET tooltip - version standalone when no project or unsupported
+  - type: dotnet
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:purple"
+    foreground: "p:purple_lighter"
+    template: "{{ if and (not .Unsupported) (not .Segments.Project.Version) }} \ue77f {{ .Full }} {{ end }}"
+    tips:
+      - dotnet
+      - nuget
+
+  # .NET tooltip - project + version connected pills
+  - type: project
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b0"
+    background: "p:gray"
+    foreground: "p:gray_light"
+    template: "{{ if and .Version .Segments.Dotnet.Full }}\uf487 {{ .Version }} {{ end }}"
+    tips:
+      - dotnet
+      - nuget
+
+  - type: dotnet
+    style: diamond
+    trailing_diamond: "\ue0b4"
+    background: "p:purple_light"
+    foreground: "p:purple"
+    template: "{{ if and (not .Unsupported) .Segments.Project.Version }} \ue77f {{ .Full }} {{ end }}"
+    tips:
+      - dotnet
+      - nuget
+
+  # .NET tooltip - unsupported state
+  - type: dotnet
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:red"
+    foreground: "p:red_lighter"
+    template: "{{ if .Unsupported }} \ue77f \uf071 {{ end }}"
+    tips:
+      - dotnet
+      - nuget

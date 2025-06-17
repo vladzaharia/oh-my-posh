@@ -1,0 +1,13 @@
+blocks:
+  - type: rprompt
+    alignment: right
+    overflow: hide
+    segments:
+      # Azure context
+      - type: az
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4 "
+        background: "p:blue"
+        foreground: "p:blue_lighter"
+        template: " \uebd8 {{ .Name }} "

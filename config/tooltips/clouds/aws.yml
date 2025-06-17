@@ -1,0 +1,40 @@
+tooltips:
+  # AWS tooltip - profile standalone when no region
+  - type: aws
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4 "
+    background: "p:orange"
+    foreground: "p:orange_darker"
+    template: "{{ if not .Region }} \ue7ad {{ .Profile }} {{ end }}"
+    properties:
+      display_default: false
+    tips:
+      - aws
+      - awscli
+
+  # AWS tooltip - profile + region connected pills
+  - type: aws
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b0"
+    background: "p:orange"
+    foreground: "p:orange_darker"
+    template: "{{ if .Region }} \ue7ad {{ .Profile }} {{ end }}"
+    properties:
+      display_default: false
+    tips:
+      - aws
+      - awscli
+
+  - type: aws
+    style: diamond
+    trailing_diamond: "\ue0b4 "
+    background: "p:orange_light"
+    foreground: "p:orange"
+    template: "{{ if .Region }} {{ .Region }} {{ end }}"
+    properties:
+      display_default: false
+    tips:
+      - aws
+      - awscli

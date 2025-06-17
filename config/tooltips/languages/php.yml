@@ -1,0 +1,12 @@
+tooltips:
+  # PHP tooltip
+  - type: php
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:purple"
+    foreground: "p:purple_lighter"
+    template: " \ue73d {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} "
+    tips:
+      - php
+      - composer

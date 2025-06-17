@@ -1,0 +1,38 @@
+tooltips:
+  # Git branch/HEAD tooltip
+  - type: git
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4 "
+    background: "p:orange"
+    foreground: "p:orange_darker"
+    template: " {{ .UpstreamIcon }}{{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }} "
+    properties:
+      branch_icon: "\ue725 "
+      fetch_status: true
+      fetch_upstream_icon: true
+    background_templates:
+      - "{{ if and (gt .Ahead 0) (gt .Behind 0) }}p:green{{ end }}"
+      - "{{ if gt .Ahead 0 }}p:green{{ end }}"
+      - "{{ if gt .Behind 0 }}p:red{{ end }}"
+    foreground_templates:
+      - "{{ if and (gt .Ahead 0) (gt .Behind 0) }}p:green_lighter{{ end }}"
+      - "{{ if gt .Ahead 0 }}p:green_lighter{{ end }}"
+      - "{{ if gt .Behind 0 }}p:red_lighter{{ end }}"
+    tips:
+      - git
+
+  # Git working/staging changes tooltip
+  - type: git
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:yellow"
+    foreground: "p:yellow_darker"
+    template: "{{ if or (.Working.Changed) (.Staging.Changed) }} {{ if .Working.Changed }}\uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }} {{ end }}"
+    properties:
+      branch_icon: "\ue725 "
+      fetch_status: true
+      fetch_upstream_icon: true
+    tips:
+      - git

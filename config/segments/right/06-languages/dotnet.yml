@@ -1,0 +1,21 @@
+blocks:
+  - type: rprompt
+    alignment: right
+    overflow: hide
+    segments:
+      # .NET runtime - diamond style when no project segment
+      - type: dotnet
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4 "
+        background: "p:purple"
+        foreground: "p:purple_lighter"
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }} \ue77f {{ if .Unsupported }}\uf071{{ else }}{{ .Full }}{{ end }} {{ end }}"
+
+      # .NET runtime - powerline style when project segment exists
+      - type: dotnet
+        style: diamond
+        trailing_diamond: "\ue0b4 "
+        background: "p:purple"
+        foreground: "p:purple_lighter"
+        template: "{{ if and (.Segments.Project.Version) (.Full) }} \ue77f {{ if .Unsupported }}\uf071{{ else }}{{ .Full }}{{ end }} {{ end }}"

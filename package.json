@@ -1,4 +1,34 @@
 {
   "name": "oh-my-posh",
-  "packageManager": "yarn@4.8.1"
+  "version": "1.0.0",
+  "description": "Modular Oh My Posh configuration builder",
+  "type": "module",
+  "packageManager": "yarn@4.8.1",
+  "scripts": {
+    "build": "tsx src/build.ts",
+    "watch": "chokidar \"config/**/*.yml\" \"config/**/*.yaml\" -c \"yarn build\"",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"config/**/*.{yml,yaml}\"",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@types/glob": "^8.1.0",
+    "@types/node": "^24.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/parser": "^8.34.1",
+    "chokidar": "^4.0.3",
+    "chokidar-cli": "^3.0.0",
+    "deepmerge": "^4.3.1",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.0",
+    "eslint-plugin-yml": "^1.18.0",
+    "glob": "^11.0.3",
+    "prettier": "^3.5.3",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "yaml": "^2.8.0"
+  }
 }

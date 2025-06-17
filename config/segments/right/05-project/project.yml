@@ -1,0 +1,15 @@
+blocks:
+  - type: rprompt
+    alignment: right
+    overflow: hide
+    segments:
+      # === PACKAGE VERSION/TOOL VERSION GROUP ===
+
+      # Project version - standalone when no language runtime detected
+      - type: project
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b0"
+        background: "p:gray"
+        foreground: "p:gray_light"
+        template: "{{ if .Version }}\uf487  {{ .Version }} {{ end }}"

@@ -1,0 +1,36 @@
+blocks:
+  # Left prompt segments (matching Starship format order)
+  - type: prompt
+    alignment: left
+    segments:
+      # OS icon (first segment, only show when no error)
+      - type: os
+        style: diamond
+        leading_diamond: "╰─ \ue0b6"
+        background: "p:gray"
+        foreground: "p:gray_light"
+        template: "{{ if eq .Code 0 }}{{ .Icon }}  {{ end }}"
+        background_templates:
+          - '{{ if eq .OS "darwin" }}p:purple{{ end }}'
+          - '{{ if eq .OS "linux" }}p:yellow{{ end }}'
+          - '{{ if eq .OS "windows" }}p:blue{{ end }}'
+          - "{{ if eq .Icon \"\uF300\" }}p:blue{{ end }}"
+          - "{{ if eq .Icon \"\uF17b\" }}p:green{{ end }}"
+          - "{{ if eq .Icon \"\uF303\" }}p:blue{{ end }}"
+          - "{{ if eq .Icon \"\uF306\" }}p:red{{ end }}"
+          - "{{ if eq .Icon \"\uF30a\" }}p:blue{{ end }}"
+          - "{{ if eq .Icon \"\uF314\" }}p:green{{ end }}"
+          - "{{ if eq .Icon \"\uF315\" }}p:red{{ end }}"
+          - "{{ if eq .Icon \"\uF31b\" }}p:orange{{ end }}"
+        foreground_templates:
+          - '{{ if eq .OS "darwin" }}p:purple_lighter{{ end }}'
+          - '{{ if eq .OS "linux" }}p:yellow_darker{{ end }}'
+          - '{{ if eq .OS "windows" }}p:blue_lighter{{ end }}'
+          - "{{ if eq .Icon \"\uF300\" }}p:blue_lighter{{ end }}"
+          - "{{ if eq .Icon \"\uF17b\" }}p:green_lighter{{ end }}"
+          - "{{ if eq .Icon \"\uF303\" }}p:blue_lighter{{ end }}"
+          - "{{ if eq .Icon \"\uF306\" }}p:red_lighter{{ end }}"
+          - "{{ if eq .Icon \"\uF30a\" }}p:blue_lighter{{ end }}"
+          - "{{ if eq .Icon \"\uF314\" }}p:green_lighter{{ end }}"
+          - "{{ if eq .Icon \"\uF315\" }}p:red_lighter{{ end }}"
+          - "{{ if eq .Icon \"\uF31b\" }}p:orange_darker{{ end }}"

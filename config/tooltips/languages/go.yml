@@ -1,0 +1,50 @@
+tooltips:
+  # Go tooltip - version standalone when no project or error
+  - type: go
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:teal"
+    foreground: "p:teal_lighter"
+    template: "{{ if and (not .Error) (not .Segments.Project.Version) }} \ue626 {{ .Full }} {{ end }}"
+    tips:
+      - go
+      - gofmt
+      - goimports
+
+  # Go tooltip - project + version connected pills
+  - type: project
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b0"
+    background: "p:gray"
+    foreground: "p:gray_light"
+    template: "{{ if and .Version .Segments.Go.Full }}\uf487 {{ .Version }} {{ end }}"
+    tips:
+      - go
+      - gofmt
+      - goimports
+
+  - type: go
+    style: diamond
+    trailing_diamond: "\ue0b4"
+    background: "p:teal_light"
+    foreground: "p:teal"
+    template: "{{ if and (not .Error) .Segments.Project.Version }} \ue626 {{ .Full }} {{ end }}"
+    tips:
+      - go
+      - gofmt
+      - goimports
+
+  # Go tooltip - error state
+  - type: go
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:red"
+    foreground: "p:red_lighter"
+    template: "{{ if .Error }} \ue626 {{ .Error }} {{ end }}"
+    tips:
+      - go
+      - gofmt
+      - goimports

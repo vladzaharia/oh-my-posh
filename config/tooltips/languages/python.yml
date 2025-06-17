@@ -1,0 +1,66 @@
+tooltips:
+  # Python tooltip - version standalone when no virtual environment
+  - type: python
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:blue"
+    foreground: "p:blue_lighter"
+    template: "{{ if and (not .Venv) (not .Error) }} \ue235 {{ .Full }} {{ end }}"
+    tips:
+      - python
+      - python3
+      - pip
+      - pip3
+      - pipenv
+      - poetry
+      - conda
+
+  # Python tooltip - version + virtual environment connected pills
+  - type: python
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b0"
+    background: "p:blue"
+    foreground: "p:blue_lighter"
+    template: "{{ if and .Venv (not .Error) }} \ue235 {{ .Full }} {{ end }}"
+    tips:
+      - python
+      - python3
+      - pip
+      - pip3
+      - pipenv
+      - poetry
+      - conda
+
+  - type: python
+    style: diamond
+    trailing_diamond: "\ue0b4"
+    background: "p:blue_light"
+    foreground: "p:blue"
+    template: "{{ if and .Venv (not .Error) }} {{ .Venv }} {{ end }}"
+    tips:
+      - python
+      - python3
+      - pip
+      - pip3
+      - pipenv
+      - poetry
+      - conda
+
+  # Python tooltip - error state
+  - type: python
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:red"
+    foreground: "p:red_lighter"
+    template: "{{ if .Error }} \ue235 {{ .Error }} {{ end }}"
+    tips:
+      - python
+      - python3
+      - pip
+      - pip3
+      - pipenv
+      - poetry
+      - conda

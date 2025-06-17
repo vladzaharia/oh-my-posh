@@ -1,0 +1,12 @@
+tooltips:
+  # Perl tooltip
+  - type: perl
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:blue"
+    foreground: "p:blue_lighter"
+    template: " \ue769 {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} "
+    tips:
+      - perl
+      - cpan

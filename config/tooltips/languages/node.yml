@@ -1,0 +1,62 @@
+tooltips:
+  # Node.js tooltip - runtime standalone when no package manager
+  - type: node
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b4"
+    background: "p:green"
+    foreground: "p:green_lighter"
+    template: "{{ if not .PackageManagerIcon }} \ue718 {{ .Full }} {{ end }}"
+    properties:
+      fetch_package_manager: true
+    tips:
+      - node
+      - npm
+      - yarn
+      - pnpm
+      - npx
+      - bun
+
+  # Node.js tooltip - runtime + package manager connected pills
+  - type: node
+    style: diamond
+    leading_diamond: "\ue0b6"
+    trailing_diamond: "\ue0b0"
+    background: "p:green"
+    foreground: "p:green_lighter"
+    template: "{{ if .PackageManagerIcon }} \ue718 {{ .Full }} {{ end }}"
+    properties:
+      fetch_package_manager: true
+    tips:
+      - node
+      - npm
+      - yarn
+      - pnpm
+      - npx
+      - bun
+
+  - type: node
+    style: diamond
+    trailing_diamond: "\ue0b4"
+    background: "p:gray_light"
+    foreground: "p:gray"
+    template: "{{ if .PackageManagerIcon }} {{ .PackageManagerIcon }} {{ end }}"
+    properties:
+      fetch_package_manager: true
+    background_templates:
+      - '{{ if eq .PackageManagerName "npm" }}p:red_light{{ end }}'
+      - '{{ if eq .PackageManagerName "yarn" }}p:blue_light{{ end }}'
+      - '{{ if eq .PackageManagerName "pnpm" }}p:orange_light{{ end }}'
+      - '{{ if eq .PackageManagerName "bun" }}p:yellow_light{{ end }}'
+    foreground_templates:
+      - '{{ if eq .PackageManagerName "npm" }}p:red{{ end }}'
+      - '{{ if eq .PackageManagerName "yarn" }}p:blue{{ end }}'
+      - '{{ if eq .PackageManagerName "pnpm" }}p:orange{{ end }}'
+      - '{{ if eq .PackageManagerName "bun" }}p:yellow{{ end }}'
+    tips:
+      - node
+      - npm
+      - yarn
+      - pnpm
+      - npx
+      - bun

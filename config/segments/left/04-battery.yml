@@ -1,0 +1,21 @@
+blocks:
+  - type: prompt
+    alignment: left
+    segments:
+      # Battery (conditional visibility based on percentage and state)
+      - type: battery
+        style: powerline
+        powerline_symbol: "\ue0b0"
+        background: "p:orange"
+        foreground: "p:orange_darker"
+        template: '{{ if and (lt .Percentage 40) (eq .State.String "Discharging") }} {{ .Icon }}{{ .Percentage }} {{ end }}'
+        properties:
+          charged_icon: "\uf240 "
+          charging_icon: "\uf1e6 "
+          discharging_icon: "\ue234 "
+        background_templates:
+          - '{{ if and (lt .Percentage 10) (eq .State.String "Discharging") }}p:red{{ end }}'
+          - '{{ if and (lt .Percentage 40) (eq .State.String "Discharging") }}p:yellow{{ end }}'
+        foreground_templates:
+          - '{{ if and (lt .Percentage 10) (eq .State.String "Discharging") }}p:red_lighter{{ end }}'
+          - '{{ if and (lt .Percentage 40) (eq .State.String "Discharging") }}p:yellow_darker{{ end }}'

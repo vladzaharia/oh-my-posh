@@ -1,0 +1,13 @@
+blocks:
+  - type: rprompt
+    alignment: right
+    overflow: hide
+    segments:
+      # Terraform workspace
+      - type: terraform
+        style: diamond
+        leading_diamond: "\ue0b6"
+        trailing_diamond: "\ue0b4 "
+        background: "p:purple"
+        foreground: "p:purple_lighter"
+        template: " \ue20f {{ .WorkspaceName }} "
