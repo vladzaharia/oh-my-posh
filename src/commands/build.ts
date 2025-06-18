@@ -1,8 +1,9 @@
-import { Args, Command, Flags } from '@oclif/core';
-import { buildConfigurations } from '../lib/merger.js';
-import { getAvailableVariants } from '../lib/variants.js';
+import { Args, Command } from '@oclif/core';
+import { buildConfigurations } from '../lib/orchestrator.js';
+import { getAvailableVariants } from '../lib/builder.js';
 
 export default class Build extends Command {
+  static override aliases = ['b'];
   static override summary = 'Build Oh My Posh configuration variants';
 
   static override description = `Build Oh My Posh configuration variants from modular YAML files.
@@ -17,7 +18,6 @@ Use 'omp variants' to see available variants.`;
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> full',
     '<%= config.bin %> <%= command.id %> minimal',
-    '<%= config.bin %> <%= command.id %> --json',
   ];
 
   static override args = {
@@ -27,23 +27,10 @@ Use 'omp variants' to see available variants.`;
     }),
   };
 
-  static override flags = {
-    json: Flags.boolean({
-      description: 'Output results as JSON',
-      default: false,
-    }),
-  };
+  static override flags = {};
 
-  static override enableJsonFlag = true;
-
-  public async run(): Promise<{
-    success: boolean;
-    variantsBuilt: number;
-    totalSegments: number;
-    totalTooltips: number;
-    variant: string;
-  }> {
-    const { args, flags } = await this.parse(Build);
+  public async run(): Promise<void> {
+    const { args } = await this.parse(Build);
     const { variant } = args;
 
     try {
@@ -63,12 +50,10 @@ Use 'omp variants' to see available variants.`;
         }
       }
 
-      if (!flags.json) {
-        if (variant) {
-          this.log(`🎯 Building specific variant: ${variant}`);
-        } else {
-          this.log('🏗️  Building all variants...');
-        }
+      if (variant) {
+        this.log(`🎯 Building specific variant: ${variant}`);
+      } else {
+        this.log('🏗️  Building all variants...');
       }
 
       const result = await buildConfigurations(variant);
@@ -78,21 +63,11 @@ Use 'omp variants' to see available variants.`;
         this.error(`❌ Build failed: ${errorMessage}`);
       }
 
-      if (!flags.json) {
-        this.log('\n🎉 Build completed successfully!');
-        this.log('📊 Summary:');
-        this.log(`   - Variants built: ${result.variantsBuilt}`);
-        this.log(`   - Total segments: ${result.totalSegments}`);
-        this.log(`   - Total tooltips: ${result.totalTooltips}`);
-      }
-
-      return {
-        success: result.success,
-        variantsBuilt: result.variantsBuilt,
-        totalSegments: result.totalSegments,
-        totalTooltips: result.totalTooltips,
-        variant: variant ?? 'all',
-      };
+      this.log('\n🎉 Build completed successfully!');
+      this.log('📊 Summary:');
+      this.log(`   - Variants built: ${result.variantsBuilt}`);
+      this.log(`   - Total segments: ${result.totalSegments}`);
+      this.log(`   - Total tooltips: ${result.totalTooltips}`);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       this.error(`❌ Build failed: ${errorMessage}`);

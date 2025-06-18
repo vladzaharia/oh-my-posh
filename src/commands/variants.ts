@@ -4,7 +4,7 @@ import {
   getDefaultVariant,
   getFallbackVariant,
   getVariant,
-} from '../lib/variants.js';
+} from '../lib/builder.js';
 
 export default class Variants extends Command {
   static override summary = 'List available Oh My Posh configuration variants';
@@ -16,7 +16,6 @@ that can be built from the modular YAML files in the config/ directory.`;
 
   static override examples = [
     '<%= config.bin %> <%= command.id %>',
-    '<%= config.bin %> <%= command.id %> --json',
     '<%= config.bin %> <%= command.id %> --detailed',
   ];
 
@@ -26,28 +25,9 @@ that can be built from the modular YAML files in the config/ directory.`;
       description: 'Show detailed information about each variant',
       default: false,
     }),
-    json: Flags.boolean({
-      description: 'Output results as JSON',
-      default: false,
-    }),
   };
 
-  static override enableJsonFlag = true;
-
-  public async run(): Promise<{
-    variants: Array<{
-      name: string;
-      description?: string;
-      filename?: string;
-      include?: Record<string, unknown>;
-      exclude?: { segments?: string[] };
-      isDefault: boolean;
-      isFallback: boolean;
-    }>;
-    defaultVariant: string | null;
-    fallbackVariant: string | null;
-    count: number;
-  }> {
+  public async run(): Promise<void> {
     const { flags } = await this.parse(Variants);
 
     try {
@@ -56,15 +36,8 @@ that can be built from the modular YAML files in the config/ directory.`;
       const fallbackVariant = getFallbackVariant();
 
       if (availableVariants.length === 0) {
-        if (!flags.json) {
-          this.warn('No variants found in build configuration');
-        }
-        return {
-          variants: [],
-          defaultVariant: null,
-          fallbackVariant: null,
-          count: 0,
-        };
+        this.warn('No variants found in build configuration');
+        return;
       }
 
       const variantDetails = flags.detailed
@@ -98,72 +71,59 @@ that can be built from the modular YAML files in the config/ directory.`;
             isFallback: name === fallbackVariant,
           }));
 
-      if (!flags.json) {
-        this.log('📋 Available Oh My Posh configuration variants:\n');
+      this.log('📋 Available Oh My Posh configuration variants:\n');
 
-        if (flags.detailed) {
-          variantDetails.forEach(variant => {
-            const badges = [];
-            if (variant.isDefault) badges.push('DEFAULT');
-            if (variant.isFallback) badges.push('FALLBACK');
-            const badgeStr = badges.length > 0 ? ` [${badges.join(', ')}]` : '';
+      if (flags.detailed) {
+        variantDetails.forEach(variant => {
+          const badges = [];
+          if (variant.isDefault) badges.push('DEFAULT');
+          if (variant.isFallback) badges.push('FALLBACK');
+          const badgeStr = badges.length > 0 ? ` [${badges.join(', ')}]` : '';
 
-            this.log(`🎯 ${variant.name}${badgeStr}`);
-            if ('description' in variant) {
-              this.log(`   Description: ${variant.description}`);
+          this.log(`🎯 ${variant.name}${badgeStr}`);
+          if ('description' in variant) {
+            this.log(`   Description: ${variant.description}`);
+          }
+          if ('filename' in variant) {
+            this.log(`   Output file: ${variant.filename}`);
+          }
+
+          if ('include' in variant && variant.include && Object.keys(variant.include).length > 0) {
+            const included = Object.entries(variant.include)
+              .filter(([, value]) => value !== false)
+              .map(([key]) => key)
+              .join(', ');
+            if (included) {
+              this.log(`   Includes: ${included}`);
             }
-            if ('filename' in variant) {
-              this.log(`   Output file: ${variant.filename}`);
-            }
+          }
 
-            if (
-              'include' in variant &&
-              variant.include &&
-              Object.keys(variant.include).length > 0
-            ) {
-              const included = Object.entries(variant.include)
-                .filter(([, value]) => value !== false)
-                .map(([key]) => key)
-                .join(', ');
-              if (included) {
-                this.log(`   Includes: ${included}`);
-              }
-            }
+          if (
+            'exclude' in variant &&
+            variant.exclude &&
+            typeof variant.exclude === 'object' &&
+            'segments' in variant.exclude &&
+            Array.isArray(variant.exclude.segments) &&
+            variant.exclude.segments.length > 0
+          ) {
+            this.log(`   Excludes: ${variant.exclude.segments.join(', ')}`);
+          }
 
-            if (
-              'exclude' in variant &&
-              variant.exclude &&
-              typeof variant.exclude === 'object' &&
-              'segments' in variant.exclude &&
-              Array.isArray(variant.exclude.segments) &&
-              variant.exclude.segments.length > 0
-            ) {
-              this.log(`   Excludes: ${variant.exclude.segments.join(', ')}`);
-            }
+          this.log('');
+        });
+      } else {
+        variantDetails.forEach(variant => {
+          const badges = [];
+          if (variant.isDefault) badges.push('DEFAULT');
+          if (variant.isFallback) badges.push('FALLBACK');
+          const badgeStr = badges.length > 0 ? ` [${badges.join(', ')}]` : '';
 
-            this.log('');
-          });
-        } else {
-          variantDetails.forEach(variant => {
-            const badges = [];
-            if (variant.isDefault) badges.push('DEFAULT');
-            if (variant.isFallback) badges.push('FALLBACK');
-            const badgeStr = badges.length > 0 ? ` [${badges.join(', ')}]` : '';
+          this.log(`  • ${variant.name}${badgeStr}`);
+        });
 
-            this.log(`  • ${variant.name}${badgeStr}`);
-          });
-
-          this.log(`\n💡 Use --detailed flag for more information about each variant`);
-          this.log(`💡 Use 'omp build <variant>' to build a specific variant`);
-        }
+        this.log(`\n💡 Use --detailed flag for more information about each variant`);
+        this.log(`💡 Use 'omp build <variant>' to build a specific variant`);
       }
-
-      return {
-        variants: variantDetails,
-        defaultVariant,
-        fallbackVariant,
-        count: availableVariants.length,
-      };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       this.error(`❌ Failed to load variants: ${errorMessage}`);

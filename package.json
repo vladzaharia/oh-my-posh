@@ -13,7 +13,9 @@
     "dirname": "omp-config",
     "commands": "./src/commands",
     "plugins": [
-      "@oclif/plugin-autocomplete"
+      "@oclif/plugin-autocomplete",
+      "@oclif/plugin-help",
+      "@oclif/plugin-not-found"
     ],
     "topicSeparator": " ",
     "additionalHelpFlags": [
@@ -30,6 +32,8 @@
     "omp:build:minimal": "./bin/dev.js build minimal",
     "omp:variants": "./bin/dev.js variants",
     "watch": "chokidar \"config/**/*.yml\" \"config/**/*.yaml\" -c \"yarn omp:build\"",
+    "manifest": "oclif manifest",
+    "prepack": "yarn manifest",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\" \"config/**/*.{yml,yaml}\"",
@@ -57,6 +61,8 @@
   "dependencies": {
     "@oclif/core": "^4.4.0",
     "@oclif/plugin-autocomplete": "^3.2.30",
+    "@oclif/plugin-help": "^6.2.29",
+    "@oclif/plugin-not-found": "^3.2.57",
     "listr2": "^8.3.3",
     "ts-node": "^10.9.2"
   }
