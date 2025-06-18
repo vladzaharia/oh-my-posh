@@ -1,61 +1,11 @@
-#!/usr/bin/env tsx
-
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { glob } from 'glob';
 import { parse, stringify } from 'yaml';
 import deepmerge from 'deepmerge';
 import { Listr, type ListrTaskWrapper, type ListrRendererFactory } from 'listr2';
+import type { YamlConfig, ConfigStats, TaskContext, BuildResult } from '../types/index.js';
 import { loadBuildConfig, createVariantConfig } from './variants.js';
-
-interface YamlConfig {
-  [key: string]: unknown;
-}
-
-interface BuildVariant {
-  description: string;
-  filename: string;
-  include: {
-    main_config?: boolean;
-    palette?: boolean;
-    transient?: boolean;
-    left_prompt?: boolean;
-    right_prompt?: boolean;
-    tooltips?: boolean;
-  };
-  exclude?: {
-    segments?: string[];
-  };
-}
-
-interface BuildConfig {
-  variants: Record<string, BuildVariant>;
-  default_variant: string;
-  fallback_variant: string;
-}
-
-interface ConfigStats {
-  totalKeys: number;
-  hasTooltips: number;
-  hasBlocks: number;
-  hasPalette: number;
-  totalSegments: number;
-}
-
-interface TaskContext {
-  yamlFiles: string[];
-  configs: YamlConfig[];
-  fullConfig: YamlConfig;
-  buildConfig?: BuildConfig | undefined;
-  variantsToBuild: string[];
-  statistics: {
-    filesFound: number;
-    filesParsed: number;
-    variantsBuilt: number;
-    totalSegments: number;
-    totalTooltips: number;
-  };
-}
 
 /**
  * Custom merge function for arrays - concatenate instead of replacing
@@ -67,7 +17,7 @@ function mergeArrays(target: unknown[], source: unknown[]): unknown[] {
 /**
  * Recursively find all YAML files in the config directory
  */
-async function findYamlFiles(
+export async function findYamlFiles(
   task: ListrTaskWrapper<TaskContext, ListrRendererFactory, ListrRendererFactory>
 ): Promise<string[]> {
   const patterns = ['config/**/*.yml', 'config/**/*.yaml'];
@@ -129,7 +79,7 @@ async function findYamlFiles(
 /**
  * Parse a YAML file and return its content
  */
-function parseYamlFile(
+export function parseYamlFile(
   filePath: string,
   task?: ListrTaskWrapper<TaskContext, ListrRendererFactory, ListrRendererFactory>
 ): YamlConfig {
@@ -160,7 +110,7 @@ function parseYamlFile(
 /**
  * Merge multiple YAML configurations into a single configuration
  */
-function mergeConfigs(configs: YamlConfig[]): YamlConfig {
+export function mergeConfigs(configs: YamlConfig[]): YamlConfig {
   if (configs.length === 0) {
     return {};
   }
@@ -258,7 +208,7 @@ function ensureOutputDir(outputPath: string): void {
 /**
  * Write a configuration variant to file
  */
-function writeConfigVariant(
+export function writeConfigVariant(
   config: YamlConfig,
   filename: string,
   variantName: string,
@@ -322,7 +272,7 @@ function writeConfigVariant(
 /**
  * Main merge function - supports building specific variants or all variants
  */
-async function merge(specificVariant?: string): Promise<void> {
+export async function buildConfigurations(specificVariant?: string): Promise<BuildResult> {
   const context: TaskContext = {
     yamlFiles: [],
     configs: [],
@@ -416,8 +366,13 @@ async function merge(specificVariant?: string): Promise<void> {
   try {
     await tasks.run();
   } catch (error) {
-    console.error('❌ Failed during initial processing:', error);
-    process.exit(1);
+    return {
+      success: false,
+      variantsBuilt: 0,
+      totalSegments: 0,
+      totalTooltips: 0,
+      errors: [error instanceof Error ? error.message : String(error)],
+    };
   }
 
   // Load build configuration and create variants
@@ -498,54 +453,19 @@ async function merge(specificVariant?: string): Promise<void> {
   try {
     await buildTasks.run();
 
-    // Final summary
-    console.log('\n🎉 Build completed successfully!');
-    console.log(`📊 Summary:`);
-    console.log(
-      `   - Files processed: ${context.statistics.filesParsed}/${context.statistics.filesFound}`
-    );
-    console.log(`   - Variants built: ${context.statistics.variantsBuilt}`);
-    console.log(`   - Total segments: ${context.statistics.totalSegments}`);
-    console.log(`   - Total tooltips: ${context.statistics.totalTooltips}`);
+    return {
+      success: true,
+      variantsBuilt: context.statistics.variantsBuilt,
+      totalSegments: context.statistics.totalSegments,
+      totalTooltips: context.statistics.totalTooltips,
+    };
   } catch (error) {
-    console.error('❌ Failed during build process:', error);
-    process.exit(1);
+    return {
+      success: false,
+      variantsBuilt: context.statistics.variantsBuilt,
+      totalSegments: context.statistics.totalSegments,
+      totalTooltips: context.statistics.totalTooltips,
+      errors: [error instanceof Error ? error.message : String(error)],
+    };
   }
 }
-
-// Run the merge if this script is executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  // Check for specific variant argument
-  const specificVariant = process.argv[2];
-
-  if (specificVariant && !['--help', '-h'].includes(specificVariant)) {
-    console.log(`🎯 Building specific variant: ${specificVariant}`);
-    merge(specificVariant).catch(error => {
-      console.error('❌ Merge failed:', error);
-      process.exit(1);
-    });
-  } else if (specificVariant && ['--help', '-h'].includes(specificVariant)) {
-    console.log('📖 Oh My Posh Configuration Merger');
-    console.log('');
-    console.log('Usage:');
-    console.log('  tsx src/merge.ts [variant]');
-    console.log('');
-    console.log('Arguments:');
-    console.log('  variant    Optional. Build specific variant (e.g., "full", "minimal")');
-    console.log('             If not specified, builds all variants defined in build-config.yml');
-    console.log('');
-    console.log('Examples:');
-    console.log('  tsx src/merge.ts           # Build all variants');
-    console.log('  tsx src/merge.ts full      # Build only full variant');
-    console.log('  tsx src/merge.ts minimal   # Build only minimal variant');
-    process.exit(0);
-  } else {
-    console.log('🏗️  Building all variants...');
-    merge().catch(error => {
-      console.error('❌ Merge failed:', error);
-      process.exit(1);
-    });
-  }
-}
-
-export { merge };

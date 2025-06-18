@@ -1,15 +1,35 @@
 {
-  "name": "oh-my-posh",
+  "name": "omp-config",
   "version": "1.0.0",
-  "description": "Modular Oh My Posh configuration merger",
+  "description": "Modular Oh My Posh configuration and merger",
   "type": "module",
   "packageManager": "yarn@4.8.1",
+  "main": "./bin/run.js",
+  "bin": {
+    "omp": "./bin/run.js"
+  },
+  "oclif": {
+    "bin": "omp",
+    "dirname": "omp-config",
+    "commands": "./src/commands",
+    "plugins": [
+      "@oclif/plugin-autocomplete"
+    ],
+    "topicSeparator": " ",
+    "additionalHelpFlags": [
+      "-h"
+    ],
+    "additionalVersionFlags": [
+      "-v"
+    ]
+  },
   "scripts": {
-    "build": "yarn merge",
-    "merge": "tsx src/merge.ts",
-    "merge:full": "tsx src/merge.ts full",
-    "merge:minimal": "tsx src/merge.ts minimal",
-    "watch": "chokidar \"config/**/*.yml\" \"config/**/*.yaml\" -c \"yarn merge\"",
+    "build": "yarn omp:build",
+    "omp:build": "./bin/dev.js build",
+    "omp:build:full": "./bin/dev.js build full",
+    "omp:build:minimal": "./bin/dev.js build minimal",
+    "omp:variants": "./bin/dev.js variants",
+    "watch": "chokidar \"config/**/*.yml\" \"config/**/*.yaml\" -c \"yarn omp:build\"",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\" \"config/**/*.{yml,yaml}\"",
@@ -35,6 +55,9 @@
     "yaml": "^2.8.0"
   },
   "dependencies": {
-    "listr2": "^8.3.3"
+    "@oclif/core": "^4.4.0",
+    "@oclif/plugin-autocomplete": "^3.2.30",
+    "listr2": "^8.3.3",
+    "ts-node": "^10.9.2"
   }
 }

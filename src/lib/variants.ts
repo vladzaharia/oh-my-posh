@@ -1,34 +1,7 @@
-#!/usr/bin/env tsx
-
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, extname } from 'path';
 import { parse } from 'yaml';
-
-interface YamlConfig {
-  [key: string]: unknown;
-}
-
-interface BuildVariant {
-  description: string;
-  filename: string;
-  include: {
-    main_config?: boolean;
-    palette?: boolean;
-    transient?: boolean;
-    left_prompt?: boolean;
-    right_prompt?: boolean;
-    tooltips?: boolean;
-  };
-  exclude?: {
-    segments?: string[];
-  };
-}
-
-interface BuildConfig {
-  variants: Record<string, BuildVariant>;
-  default_variant: string;
-  fallback_variant: string;
-}
+import type { YamlConfig, BuildVariant, BuildConfig } from '../types/index.js';
 
 /**
  * Load build configuration from build/ directory
