@@ -1,0 +1,13 @@
+# Full Configuration Variant
+# Complete Oh My Posh configuration with all features
+
+description: "Complete Oh My Posh configuration with all features"
+filename: "full.yml"
+include:
+  main_config: true
+  palette: true
+  transient: true
+  left_prompt: true
+  right_prompt: true
+  tooltips: true
+exclude: []

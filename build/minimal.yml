@@ -1,0 +1,16 @@
+# Minimal Configuration Variant
+# Fallback configuration for error scenarios
+
+description: "Minimal Oh My Posh configuration for fallback scenarios"
+filename: "minimal.yml"
+include:
+  main_config: true
+  palette: true
+  transient: true
+  left_prompt: true
+  right_prompt: false
+  tooltips: false
+exclude:
+  # Exclude specific segments from left prompt
+  segments:
+    - "battery"  # Remove battery segment from left prompt

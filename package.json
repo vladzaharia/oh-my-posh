@@ -1,12 +1,15 @@
 {
   "name": "oh-my-posh",
   "version": "1.0.0",
-  "description": "Modular Oh My Posh configuration builder",
+  "description": "Modular Oh My Posh configuration merger",
   "type": "module",
   "packageManager": "yarn@4.8.1",
   "scripts": {
-    "build": "tsx src/build.ts",
-    "watch": "chokidar \"config/**/*.yml\" \"config/**/*.yaml\" -c \"yarn build\"",
+    "build": "yarn merge",
+    "merge": "tsx src/merge.ts",
+    "merge:full": "tsx src/merge.ts full",
+    "merge:minimal": "tsx src/merge.ts minimal",
+    "watch": "chokidar \"config/**/*.yml\" \"config/**/*.yaml\" -c \"yarn merge\"",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\" \"config/**/*.{yml,yaml}\"",
