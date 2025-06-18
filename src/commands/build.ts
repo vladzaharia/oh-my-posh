@@ -9,7 +9,7 @@ export default class Build extends Command {
   static override description = `Build Oh My Posh configuration variants from modular YAML files.
 
 This command scans the config/ directory for YAML files, merges them according to the build configuration,
-and outputs the specified variant(s) to the dist/ directory.
+and outputs the specified variant(s) to the out/ directory.
 
 If no variant is specified, all variants defined in the build configuration will be built.
 Use 'omp variants' to see available variants.`;

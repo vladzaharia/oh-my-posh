@@ -2,13 +2,15 @@ import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, extname } from 'path';
 import { parse } from 'yaml';
 import type { YamlConfig, BuildVariant, BuildConfig } from '../types/index.js';
+import { getRepoRoot } from './utils.js';
 
 /**
  * Load build configuration from build/ directory
  */
 export function loadBuildConfig(): BuildConfig {
   try {
-    const buildDir = 'build';
+    const repoRoot = getRepoRoot();
+    const buildDir = join(repoRoot, 'build');
     const variants: Record<string, BuildVariant> = {};
 
     // Load all variant files

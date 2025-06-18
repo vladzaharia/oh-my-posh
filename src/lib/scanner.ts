@@ -1,6 +1,8 @@
 import { glob } from 'glob';
+import { join } from 'path';
 import type { ListrTaskWrapper, ListrRendererFactory } from 'listr2';
 import type { TaskContext } from '../types/index.js';
+import { getRepoRoot } from './utils.js';
 
 /**
  * Recursively find all YAML files in the config directory
@@ -8,7 +10,8 @@ import type { TaskContext } from '../types/index.js';
 export async function findYamlFiles(
   task: ListrTaskWrapper<TaskContext, ListrRendererFactory, ListrRendererFactory>
 ): Promise<string[]> {
-  const patterns = ['config/**/*.yml', 'config/**/*.yaml'];
+  const repoRoot = getRepoRoot();
+  const patterns = [join(repoRoot, 'config/**/*.yml'), join(repoRoot, 'config/**/*.yaml')];
   const files: string[] = [];
 
   task.output = 'Scanning for YAML files...';

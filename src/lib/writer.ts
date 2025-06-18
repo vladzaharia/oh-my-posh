@@ -3,6 +3,7 @@ import { join, dirname } from 'path';
 import { stringify } from 'yaml';
 import type { ListrTaskWrapper, ListrRendererFactory } from 'listr2';
 import type { YamlConfig, ConfigStats, TaskContext } from '../types/index.js';
+import { getRepoRoot } from './utils.js';
 
 /**
  * Ensure the output directory exists
@@ -23,7 +24,7 @@ export function writeConfigVariant(
   variantName: string,
   task?: ListrTaskWrapper<TaskContext, ListrRendererFactory, ListrRendererFactory>
 ): { stats: ConfigStats } {
-  const outputPath = join(process.cwd(), 'dist', filename);
+  const outputPath = join(getRepoRoot(), 'out', filename);
   ensureOutputDir(outputPath);
 
   try {

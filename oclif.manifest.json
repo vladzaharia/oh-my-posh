@@ -1,0 +1,72 @@
+{
+  "commands": {
+    "build": {
+      "aliases": [
+        "b"
+      ],
+      "args": {
+        "variant": {
+          "description": "Specific variant to build (e.g., \"full\", \"minimal\")",
+          "name": "variant",
+          "required": false
+        }
+      },
+      "description": "Build Oh My Posh configuration variants from modular YAML files.\n\nThis command scans the config/ directory for YAML files, merges them according to the build configuration,\nand outputs the specified variant(s) to the out/ directory.\n\nIf no variant is specified, all variants defined in the build configuration will be built.\nUse 'omp variants' to see available variants.",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> full",
+        "<%= config.bin %> <%= command.id %> minimal"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "build",
+      "pluginAlias": "omp-config",
+      "pluginName": "omp-config",
+      "pluginType": "core",
+      "strict": true,
+      "summary": "Build Oh My Posh configuration variants",
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "build.js"
+      ]
+    },
+    "variants": {
+      "aliases": [],
+      "args": {},
+      "description": "List all available configuration variants defined in the build configuration.\n\nEach variant represents a different combination of segments, features, and configurations\nthat can be built from the modular YAML files in the config/ directory.",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> --detailed"
+      ],
+      "flags": {
+        "detailed": {
+          "char": "d",
+          "description": "Show detailed information about each variant",
+          "name": "detailed",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "variants",
+      "pluginAlias": "omp-config",
+      "pluginName": "omp-config",
+      "pluginType": "core",
+      "strict": true,
+      "summary": "List available Oh My Posh configuration variants",
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "variants.js"
+      ]
+    }
+  },
+  "version": "1.0.0"
+}

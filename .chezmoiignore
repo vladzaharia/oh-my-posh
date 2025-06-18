@@ -1,0 +1,4 @@
+*
+**/*
+!out/config.yml
+!out/run_merge.sh
