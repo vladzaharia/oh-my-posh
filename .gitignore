@@ -7,6 +7,9 @@ dist/
 # Yarn cache (if using zero-installs, uncomment the line below)
 # .yarn/cache
 
+# Yarn optimization files
+.yarn/install-state.gz
+
 # IDE files
 .vscode/
 .idea/

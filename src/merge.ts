@@ -5,10 +5,56 @@ import { join, dirname } from 'path';
 import { glob } from 'glob';
 import { parse, stringify } from 'yaml';
 import deepmerge from 'deepmerge';
+import { Listr, type ListrTaskWrapper, type ListrRendererFactory } from 'listr2';
 import { loadBuildConfig, createVariantConfig } from './variants.js';
 
 interface YamlConfig {
   [key: string]: unknown;
+}
+
+interface BuildVariant {
+  description: string;
+  filename: string;
+  include: {
+    main_config?: boolean;
+    palette?: boolean;
+    transient?: boolean;
+    left_prompt?: boolean;
+    right_prompt?: boolean;
+    tooltips?: boolean;
+  };
+  exclude?: {
+    segments?: string[];
+  };
+}
+
+interface BuildConfig {
+  variants: Record<string, BuildVariant>;
+  default_variant: string;
+  fallback_variant: string;
+}
+
+interface ConfigStats {
+  totalKeys: number;
+  hasTooltips: number;
+  hasBlocks: number;
+  hasPalette: number;
+  totalSegments: number;
+}
+
+interface TaskContext {
+  yamlFiles: string[];
+  configs: YamlConfig[];
+  fullConfig: YamlConfig;
+  buildConfig?: BuildConfig | undefined;
+  variantsToBuild: string[];
+  statistics: {
+    filesFound: number;
+    filesParsed: number;
+    variantsBuilt: number;
+    totalSegments: number;
+    totalTooltips: number;
+  };
 }
 
 /**
@@ -21,9 +67,13 @@ function mergeArrays(target: unknown[], source: unknown[]): unknown[] {
 /**
  * Recursively find all YAML files in the config directory
  */
-async function findYamlFiles(): Promise<string[]> {
+async function findYamlFiles(
+  task: ListrTaskWrapper<TaskContext, ListrRendererFactory, ListrRendererFactory>
+): Promise<string[]> {
   const patterns = ['config/**/*.yml', 'config/**/*.yaml'];
   const files: string[] = [];
+
+  task.output = 'Scanning for YAML files...';
 
   for (const pattern of patterns) {
     const matches = await glob(pattern, {
@@ -31,10 +81,13 @@ async function findYamlFiles(): Promise<string[]> {
       absolute: true,
     });
     files.push(...matches);
+    task.output = `Found ${files.length} files so far...`;
   }
 
+  task.output = `Sorting ${files.length} files...`;
+
   // Custom sort to ensure files in a directory come before subdirectories
-  return files.sort((a, b) => {
+  const sortedFiles = files.sort((a, b) => {
     const aParts = a.split('/');
     const bParts = b.split('/');
 
@@ -68,24 +121,38 @@ async function findYamlFiles(): Promise<string[]> {
     // If all compared segments are equal, shorter path comes first
     return aParts.length - bParts.length;
   });
+
+  task.output = `Found ${sortedFiles.length} YAML files`;
+  return sortedFiles;
 }
 
 /**
  * Parse a YAML file and return its content
  */
-function parseYamlFile(filePath: string): YamlConfig {
+function parseYamlFile(
+  filePath: string,
+  task?: ListrTaskWrapper<TaskContext, ListrRendererFactory, ListrRendererFactory>
+): YamlConfig {
   try {
+    if (task) {
+      task.output = `Parsing ${filePath.replace(process.cwd(), '.')}`;
+    }
+
     const content = readFileSync(filePath, 'utf8');
     const parsed = parse(content) as YamlConfig;
 
     if (!parsed || typeof parsed !== 'object') {
-      console.warn(`Warning: ${filePath} does not contain valid YAML object, skipping`);
+      if (task) {
+        task.output = `Warning: ${filePath} does not contain valid YAML object, skipping`;
+      }
       return {};
     }
 
     return parsed;
   } catch (error) {
-    console.error(`Error parsing ${filePath}:`, error);
+    if (task) {
+      task.output = `Error parsing ${filePath}: ${error}`;
+    }
     return {};
   }
 }
@@ -191,11 +258,20 @@ function ensureOutputDir(outputPath: string): void {
 /**
  * Write a configuration variant to file
  */
-function writeConfigVariant(config: YamlConfig, filename: string, variantName: string): void {
+function writeConfigVariant(
+  config: YamlConfig,
+  filename: string,
+  variantName: string,
+  task?: ListrTaskWrapper<TaskContext, ListrRendererFactory, ListrRendererFactory>
+): { stats: ConfigStats } {
   const outputPath = join(process.cwd(), 'dist', filename);
   ensureOutputDir(outputPath);
 
   try {
+    if (task) {
+      task.output = `Writing ${variantName} configuration...`;
+    }
+
     const yamlOutput = stringify(config, {
       indent: 2,
       lineWidth: 120,
@@ -206,11 +282,8 @@ function writeConfigVariant(config: YamlConfig, filename: string, variantName: s
     });
 
     writeFileSync(outputPath, yamlOutput, 'utf8');
-    console.log(
-      `✅ ${variantName} configuration written to: ${outputPath.replace(process.cwd(), '.')}`
-    );
 
-    // Log some statistics
+    // Calculate statistics
     const stats = {
       totalKeys: Object.keys(config).length,
       hasTooltips: Array.isArray(config['tooltips']) ? (config['tooltips'] as unknown[]).length : 0,
@@ -233,14 +306,15 @@ function writeConfigVariant(config: YamlConfig, filename: string, variantName: s
       }, 0);
     }
 
-    console.log(`📊 ${variantName} statistics:`);
-    console.log(`   - Top-level keys: ${stats.totalKeys}`);
-    console.log(`   - Tooltips: ${stats.hasTooltips}`);
-    console.log(`   - Blocks: ${stats.hasBlocks}`);
-    console.log(`   - Segments: ${stats.totalSegments}`);
-    console.log(`   - Palette colors: ${stats.hasPalette}`);
+    if (task) {
+      task.output = `${variantName} written: ${stats.totalSegments} segments, ${stats.hasTooltips} tooltips`;
+    }
+
+    return { stats };
   } catch (error) {
-    console.error(`❌ Error writing ${variantName} configuration file:`, error);
+    if (task) {
+      task.output = `Error writing ${variantName}: ${error}`;
+    }
     throw error;
   }
 }
@@ -249,67 +323,194 @@ function writeConfigVariant(config: YamlConfig, filename: string, variantName: s
  * Main merge function - supports building specific variants or all variants
  */
 async function merge(specificVariant?: string): Promise<void> {
-  console.log('🔍 Finding YAML files...');
+  const context: TaskContext = {
+    yamlFiles: [],
+    configs: [],
+    fullConfig: {},
+    buildConfig: undefined,
+    variantsToBuild: [],
+    statistics: {
+      filesFound: 0,
+      filesParsed: 0,
+      variantsBuilt: 0,
+      totalSegments: 0,
+      totalTooltips: 0,
+    },
+  };
 
-  const yamlFiles = await findYamlFiles();
+  const tasks = new Listr<TaskContext>(
+    [
+      {
+        title: 'Scanning for YAML files',
+        task: async (ctx, task) => {
+          ctx.yamlFiles = await findYamlFiles(task);
+          ctx.statistics.filesFound = ctx.yamlFiles.length;
 
-  if (yamlFiles.length === 0) {
-    console.error('❌ No YAML files found in config directory');
+          if (ctx.yamlFiles.length === 0) {
+            throw new Error('No YAML files found in config directory');
+          }
+
+          task.title = `Found ${ctx.yamlFiles.length} YAML files`;
+        },
+      },
+      {
+        title: 'Parsing configuration files',
+        task: (ctx, task) => {
+          return task.newListr(
+            ctx.yamlFiles.map(file => ({
+              title: `${file.replace(process.cwd(), '.')}`,
+              task: async (subCtx, subTask) => {
+                const config = parseYamlFile(file, subTask);
+                if (Object.keys(config).length > 0) {
+                  subCtx.configs.push(config);
+                  subCtx.statistics.filesParsed++;
+                  subTask.title = `${file.replace(process.cwd(), '.')} ✓`;
+                } else {
+                  subTask.skip('Empty or invalid YAML');
+                }
+              },
+            })),
+            { concurrent: true, exitOnError: false }
+          );
+        },
+      },
+      {
+        title: 'Merging configurations',
+        task: async (ctx, task) => {
+          task.output = 'Consolidating all configurations...';
+          ctx.fullConfig = mergeConfigs(ctx.configs);
+
+          // Calculate merged statistics
+          if (Array.isArray(ctx.fullConfig['tooltips'])) {
+            ctx.statistics.totalTooltips = (ctx.fullConfig['tooltips'] as unknown[]).length;
+          }
+
+          if (Array.isArray(ctx.fullConfig['blocks'])) {
+            ctx.statistics.totalSegments = (ctx.fullConfig['blocks'] as unknown[]).reduce(
+              (total: number, block) => {
+                if (
+                  block &&
+                  typeof block === 'object' &&
+                  Array.isArray((block as { segments?: unknown[] }).segments)
+                ) {
+                  return total + (block as { segments: unknown[] }).segments.length;
+                }
+                return total;
+              },
+              0
+            );
+          }
+
+          task.title = `Merged ${ctx.statistics.filesParsed} files (${ctx.statistics.totalSegments} segments, ${ctx.statistics.totalTooltips} tooltips)`;
+        },
+      },
+    ],
+    {
+      ctx: context,
+      rendererOptions: {
+        showSubtasks: true,
+      },
+    }
+  );
+
+  try {
+    await tasks.run();
+  } catch (error) {
+    console.error('❌ Failed during initial processing:', error);
     process.exit(1);
   }
 
-  console.log(`📁 Found ${yamlFiles.length} YAML files:`);
-  yamlFiles.forEach(file => {
-    console.log(`   - ${file.replace(process.cwd(), '.')}`);
-  });
+  // Load build configuration and create variants
+  const buildTasks = new Listr<TaskContext>(
+    [
+      {
+        title: 'Loading build configuration',
+        task: async (ctx, task) => {
+          try {
+            ctx.buildConfig = loadBuildConfig();
+            task.title = 'Build configuration loaded';
+          } catch {
+            task.skip('No build configuration found, creating basic merge');
+            // Fallback to basic merge
+            const basicTasks = new Listr([
+              {
+                title: 'Writing basic configuration',
+                task: async (_subCtx, subTask) => {
+                  writeConfigVariant(ctx.fullConfig, 'config.yml', 'Basic', subTask);
+                  ctx.statistics.variantsBuilt = 1;
+                },
+              },
+            ]);
+            await basicTasks.run();
+            return;
+          }
+        },
+      },
+      {
+        title: 'Determining variants to build',
+        skip: ctx => !ctx.buildConfig,
+        task: async (ctx, task) => {
+          ctx.variantsToBuild = specificVariant
+            ? [specificVariant]
+            : Object.keys(ctx.buildConfig?.variants ?? {});
+          task.title = `Building ${ctx.variantsToBuild.length} variant(s): ${ctx.variantsToBuild.join(', ')}`;
+        },
+      },
+      {
+        title: 'Building variants...',
+        skip: ctx => !ctx.buildConfig || ctx.variantsToBuild.length === 0,
+        task: (ctx, task) => {
+          return task.newListr(
+            ctx.variantsToBuild.map(variantName => ({
+              title: `${variantName} variant`,
+              task: async (subCtx, subTask) => {
+                const variant = ctx.buildConfig?.variants[variantName];
+                if (!variant) {
+                  throw new Error(`Variant '${variantName}' not found in build configuration`);
+                }
 
-  console.log('\n📖 Parsing YAML files...');
-  const configs: YamlConfig[] = [];
+                subTask.output = `Creating ${variantName} configuration...`;
+                const variantConfig = createVariantConfig(ctx.fullConfig, variant);
+                const result = writeConfigVariant(
+                  variantConfig,
+                  variant.filename,
+                  variantName,
+                  subTask
+                );
 
-  for (const file of yamlFiles) {
-    const config = parseYamlFile(file);
-    if (Object.keys(config).length > 0) {
-      configs.push(config);
+                subCtx.statistics.variantsBuilt++;
+                subTask.title = `${variantName} variant (${result.stats.totalSegments} segments)`;
+              },
+            })),
+            { concurrent: false, exitOnError: false }
+          );
+        },
+      },
+    ],
+    {
+      ctx: context,
+      rendererOptions: {
+        showSubtasks: true,
+      },
     }
-  }
+  );
 
-  console.log(`✅ Successfully parsed ${configs.length} configuration files`);
-
-  console.log('\n🔄 Merging configurations...');
-  const fullConfig = mergeConfigs(configs);
-
-  // Load build configuration
-  let buildConfig;
   try {
-    buildConfig = loadBuildConfig();
-  } catch {
-    console.error('❌ Failed to load build configuration, falling back to basic merge');
-    // Fallback to original behavior
-    console.log('\n📝 Writing basic merged configuration...');
-    writeConfigVariant(fullConfig, 'config.yml', 'Basic');
-    console.log('\n🎉 Basic merge completed successfully!');
-    return;
+    await buildTasks.run();
+
+    // Final summary
+    console.log('\n🎉 Build completed successfully!');
+    console.log(`📊 Summary:`);
+    console.log(
+      `   - Files processed: ${context.statistics.filesParsed}/${context.statistics.filesFound}`
+    );
+    console.log(`   - Variants built: ${context.statistics.variantsBuilt}`);
+    console.log(`   - Total segments: ${context.statistics.totalSegments}`);
+    console.log(`   - Total tooltips: ${context.statistics.totalTooltips}`);
+  } catch (error) {
+    console.error('❌ Failed during build process:', error);
+    process.exit(1);
   }
-
-  // Determine which variants to build
-  const variantsToBuild = specificVariant ? [specificVariant] : Object.keys(buildConfig.variants);
-
-  console.log(`\n🏗️  Building ${variantsToBuild.length} variant(s): ${variantsToBuild.join(', ')}`);
-
-  // Build each variant
-  for (const variantName of variantsToBuild) {
-    const variant = buildConfig.variants[variantName];
-    if (!variant) {
-      console.error(`❌ Variant '${variantName}' not found in build configuration`);
-      continue;
-    }
-
-    console.log(`\n📝 Creating ${variantName} variant...`);
-    const variantConfig = createVariantConfig(fullConfig, variant);
-    writeConfigVariant(variantConfig, variant.filename, variantName);
-  }
-
-  console.log('\n🎉 All variants built successfully!');
 }
 
 // Run the merge if this script is executed directly
