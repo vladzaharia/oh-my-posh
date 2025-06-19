@@ -5,9 +5,9 @@ blocks:
       # Status segment (only show on error, with leading diamond)
       - type: status
         style: diamond
-        leading_diamond: "╰─ \ue0b6"
+        leading_diamond: ""
         background: "p:red"
         foreground: "p:red_lighter"
-        template: "{{ if .Code }}\uf071 {{ .Code }} {{ end }}"
+        template: "{{ if .Code }}\uf071  {{ .Code }} {{ end }}"
         properties:
           always_enabled: true

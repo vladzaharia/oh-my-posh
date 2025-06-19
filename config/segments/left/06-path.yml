@@ -4,10 +4,10 @@ blocks:
     segments:
       # Directory (from $directory)
       - type: path
-        style: powerline
-        powerline_symbol: "\ue0b0"
+        style: diamond
+        trailing_diamond: "\ue0b4 "
         background: "p:teal"
-        foreground: "p:teal_lighter"
+        foreground: "p:teal_darker"
         properties:
           home_icon: "\ue617 "
           style: agnoster_short

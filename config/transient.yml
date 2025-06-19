@@ -1,4 +1,8 @@
 transient_prompt:
   background: "p:transparent"
-  foreground: "p:teal"
+  foreground: "p:grey_dark"
   template: "├─ "
+  foreground_templates:
+    - '{{ if eq .OS "darwin" }}p:purple_dark{{ end }}'
+    - '{{ if eq .OS "linux" }}p:yellow_dark{{ end }}'
+    - '{{ if eq .OS "windows" }}p:blue_dark{{ end }}'

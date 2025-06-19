@@ -64,6 +64,7 @@
   },
   "scripts": {
     "build": "tsc && yarn omp:build",
+    "merge": "tsc && ./run_merge.sh",
     "clean": "rm -rf dist tmp out/config.yml",
     "omp:build": "./bin/dev.js build",
     "watch": "chokidar \"config/**/*.yml\" \"config/**/*.yaml\" -c \"yarn omp:build\"",

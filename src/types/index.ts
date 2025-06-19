@@ -15,6 +15,7 @@ export interface BuildVariant {
   };
   exclude?: {
     segments?: string[];
+    newline_blocks?: boolean;
   };
 }
 

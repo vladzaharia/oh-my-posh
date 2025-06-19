@@ -8,4 +8,4 @@ blocks:
         powerline_symbol: "\ue0b0"
         background: "p:blue"
         foreground: "p:blue_lighter"
-        template: "{{ if or .SSHSession (ne .UserName \"vlad\") }} {{ if .SSHSession }}\uf817 {{ end }}{{ .UserName }}{{ if .SSHSession }}@{{ .HostName }}{{ end }} {{ end }}"
+        template: " {{ if .SSHSession }}\uf817 {{ end }}{{ .UserName }}{{ if .SSHSession }}@{{ .HostName }}{{ end }} "

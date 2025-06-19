@@ -1,4 +1,4 @@
 *
 **/*
 !out/config.yml
-!out/run_merge.sh
+!run_install.sh

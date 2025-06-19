@@ -1,6 +1,6 @@
 blocks:
   # Right prompt segments (matching Starship right_format order)
-  - type: rprompt
+  - type: prompt
     alignment: right
     overflow: hide
     segments:

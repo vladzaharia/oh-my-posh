@@ -3,6 +3,11 @@ final_space: true
 shell_integration: true
 enable_cursor_positioning: true
 tooltips_action: replace
+iterm_features:
+  - prompt_mark
+  - current_dir
+  - remote_host
+async: true
 palette:
   transparent: transparent
   gray_lighter: "#eff2f6"
@@ -52,15 +57,27 @@ palette:
   magenta_darker: "#15050d"
 transient_prompt:
   background: p:transparent
-  foreground: p:teal
+  foreground: p:grey_dark
   template: "├─ "
+  foreground_templates:
+    - "{{ if eq .OS \"darwin\" }}p:purple_dark{{ end }}"
+    - "{{ if eq .OS \"linux\" }}p:yellow_dark{{ end }}"
+    - "{{ if eq .OS \"windows\" }}p:blue_dark{{ end }}"
 blocks:
   - type: prompt
     alignment: left
     segments:
+      - type: text
+        style: plain
+        background: p:transparent
+        template: "├─ "
+        foreground_templates:
+          - "{{ if eq .OS \"darwin\" }}p:purple{{ end }}"
+          - "{{ if eq .OS \"linux\" }}p:yellow{{ end }}"
+          - "{{ if eq .OS \"windows\" }}p:blue{{ end }}"
       - type: os
         style: diamond
-        leading_diamond: ╰─ 
+        leading_diamond: 
         background: p:gray
         foreground: p:gray_light
         template: "{{ if eq .Code 0 }}{{ .Icon }}  {{ end }}"
@@ -68,32 +85,16 @@ blocks:
           - "{{ if eq .OS \"darwin\" }}p:purple{{ end }}"
           - "{{ if eq .OS \"linux\" }}p:yellow{{ end }}"
           - "{{ if eq .OS \"windows\" }}p:blue{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:blue{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:green{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:blue{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:red{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:blue{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:green{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:red{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:orange{{ end }}"
         foreground_templates:
           - "{{ if eq .OS \"darwin\" }}p:purple_lighter{{ end }}"
           - "{{ if eq .OS \"linux\" }}p:yellow_darker{{ end }}"
           - "{{ if eq .OS \"windows\" }}p:blue_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:blue_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:green_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:blue_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:red_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:blue_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:green_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:red_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:orange_darker{{ end }}"
       - type: status
         style: diamond
-        leading_diamond: ╰─ 
+        leading_diamond: 
         background: p:red
         foreground: p:red_lighter
-        template: "{{ if .Code }} {{ .Code }} {{ end }}"
+        template: "{{ if .Code }}  {{ .Code }} {{ end }}"
         properties:
           always_enabled: true
       - type: executiontime
@@ -126,25 +127,17 @@ blocks:
         powerline_symbol: 
         background: p:blue
         foreground: p:blue_lighter
-        template: "{{ if or .SSHSession (ne .UserName \"vlad\") }} {{ if .SSHSession }} {{ end }}{{ .UserName }}{{ if
-          .SSHSession }}@{{ .HostName }}{{ end }} {{ end }}"
+        template: " {{ if .SSHSession }} {{ end }}{{ .UserName }}{{ if .SSHSession }}@{{ .HostName }}{{ end }} "
       - type: path
-        style: powerline
-        powerline_symbol: 
+        style: diamond
+        trailing_diamond: " "
         background: p:teal
-        foreground: p:teal_lighter
+        foreground: p:teal_darker
         properties:
           home_icon: " "
           style: agnoster_short
           max_depth: 1
-      - type: shell
-        style: diamond
-        powerline_symbol: 
-        trailing_diamond: 
-        background: p:purple
-        foreground: p:purple_lighter
-        template: " {{ .Name }} "
-  - type: rprompt
+  - type: prompt
     alignment: right
     overflow: hide
     segments:
@@ -393,6 +386,35 @@ blocks:
         background: p:blue
         foreground: p:blue_lighter
         template: "  {{ .Name }} "
+  - type: prompt
+    alignment: left
+    newline: true
+    segments:
+      - type: text
+        style: plain
+        background: p:transparent
+        template: ╰─
+        foreground_templates:
+          - "{{ if eq .OS \"darwin\" }}p:purple_light{{ end }}"
+          - "{{ if eq .OS \"linux\" }}p:yellow_light{{ end }}"
+          - "{{ if eq .OS \"windows\" }}p:blue_light{{ end }}"
+      - type: shell
+        style: plain
+        background: p:transparent
+        foreground: p:gray
+        template: " {{ .Name }} "
+        properties:
+          mapped_shell_names:
+            bash: $
+            shell: 󰈅
+            zsh: 
+            pwsh: 
+            cmd: 
+        foreground_templates:
+          - "{{ if .Root }}p:orange{{ end }}"
+          - "{{ if eq .Shell \"pwsh\" }}p:blue{{ end }}"
+          - "{{ if eq .Shell \"bash\" }}p:green{{ end }}"
+          - "{{ if eq .Shell \"zsh\" }}p:magenta{{ end }}"
 tooltips:
   - type: aws
     style: diamond

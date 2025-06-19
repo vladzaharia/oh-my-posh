@@ -1,0 +1,32 @@
+blocks:
+  # Second line left prompt (similar to atomic theme)
+  - type: prompt
+    alignment: left
+    newline: true
+    segments:
+      - type: text
+        style: plain
+        background: "p:transparent"
+        template: "╰─"
+        foreground_templates:
+          - '{{ if eq .OS "darwin" }}p:purple_light{{ end }}'
+          - '{{ if eq .OS "linux" }}p:yellow_light{{ end }}'
+          - '{{ if eq .OS "windows" }}p:blue_light{{ end }}'
+      - type: shell
+        style: plain
+        background: "p:transparent"
+        foreground: "p:gray"
+        template: " {{ .Name }} "
+        properties:
+          mapped_shell_names:
+            bash: $
+            shell: 󰈅
+            zsh: 
+            pwsh:  
+            cmd:  
+        foreground_templates:
+          - '{{ if .Root }}p:orange{{ end }}'
+          - '{{ if eq .Shell "pwsh" }}p:blue{{ end }}'
+          - '{{ if eq .Shell "bash" }}p:green{{ end }}'
+          - '{{ if eq .Shell "zsh" }}p:magenta{{ end }}'
+            

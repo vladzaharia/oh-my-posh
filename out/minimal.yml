@@ -3,6 +3,11 @@ final_space: true
 shell_integration: true
 enable_cursor_positioning: true
 tooltips_action: replace
+iterm_features:
+  - prompt_mark
+  - current_dir
+  - remote_host
+async: true
 palette:
   transparent: transparent
   gray_lighter: "#eff2f6"
@@ -52,15 +57,27 @@ palette:
   magenta_darker: "#15050d"
 transient_prompt:
   background: p:transparent
-  foreground: p:teal
+  foreground: p:grey_dark
   template: "├─ "
+  foreground_templates:
+    - "{{ if eq .OS \"darwin\" }}p:purple_dark{{ end }}"
+    - "{{ if eq .OS \"linux\" }}p:yellow_dark{{ end }}"
+    - "{{ if eq .OS \"windows\" }}p:blue_dark{{ end }}"
 blocks:
   - type: prompt
     alignment: left
     segments:
+      - type: text
+        style: plain
+        background: p:transparent
+        template: "├─ "
+        foreground_templates:
+          - "{{ if eq .OS \"darwin\" }}p:purple{{ end }}"
+          - "{{ if eq .OS \"linux\" }}p:yellow{{ end }}"
+          - "{{ if eq .OS \"windows\" }}p:blue{{ end }}"
       - type: os
         style: diamond
-        leading_diamond: ╰─ 
+        leading_diamond: 
         background: p:gray
         foreground: p:gray_light
         template: "{{ if eq .Code 0 }}{{ .Icon }}  {{ end }}"
@@ -68,32 +85,16 @@ blocks:
           - "{{ if eq .OS \"darwin\" }}p:purple{{ end }}"
           - "{{ if eq .OS \"linux\" }}p:yellow{{ end }}"
           - "{{ if eq .OS \"windows\" }}p:blue{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:blue{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:green{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:blue{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:red{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:blue{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:green{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:red{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:orange{{ end }}"
         foreground_templates:
           - "{{ if eq .OS \"darwin\" }}p:purple_lighter{{ end }}"
           - "{{ if eq .OS \"linux\" }}p:yellow_darker{{ end }}"
           - "{{ if eq .OS \"windows\" }}p:blue_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:blue_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:green_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:blue_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:red_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:blue_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:green_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:red_lighter{{ end }}"
-          - "{{ if eq .Icon \"\" }}p:orange_darker{{ end }}"
       - type: status
         style: diamond
-        leading_diamond: ╰─ 
+        leading_diamond: 
         background: p:red
         foreground: p:red_lighter
-        template: "{{ if .Code }} {{ .Code }} {{ end }}"
+        template: "{{ if .Code }}  {{ .Code }} {{ end }}"
         properties:
           always_enabled: true
       - type: executiontime
@@ -110,21 +111,262 @@ blocks:
         powerline_symbol: 
         background: p:blue
         foreground: p:blue_lighter
-        template: "{{ if or .SSHSession (ne .UserName \"vlad\") }} {{ if .SSHSession }} {{ end }}{{ .UserName }}{{ if
-          .SSHSession }}@{{ .HostName }}{{ end }} {{ end }}"
+        template: " {{ if .SSHSession }} {{ end }}{{ .UserName }}{{ if .SSHSession }}@{{ .HostName }}{{ end }} "
       - type: path
-        style: powerline
-        powerline_symbol: 
+        style: diamond
+        trailing_diamond: " "
         background: p:teal
-        foreground: p:teal_lighter
+        foreground: p:teal_darker
         properties:
           home_icon: " "
           style: agnoster_short
           max_depth: 1
-      - type: shell
+  - type: prompt
+    alignment: right
+    overflow: hide
+    segments:
+      - type: docker
         style: diamond
-        powerline_symbol: 
-        trailing_diamond: 
+        leading_diamond: 
+        trailing_diamond: " "
+        background: p:blue
+        foreground: p:blue_lighter
+        template: "  {{ .Context }} "
+        properties:
+          display_mode: files
+          fetch_context: true
+      - type: git
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: " "
+        background: p:orange
+        foreground: p:orange_darker
+        template: "{{ if not (or (.Working.Changed) (.Staging.Changed)) }}{{ .UpstreamIcon }} {{ .HEAD }}{{ if .BranchStatus }}
+          {{ .BranchStatus }}{{ end }} {{ end }}"
+        properties:
+          branch_icon: " "
+          fetch_status: true
+          fetch_upstream_icon: true
+        background_templates:
+          - "{{ if gt .Ahead 0 }}p:green{{ end }}"
+          - "{{ if gt .Behind 0 }}p:red{{ end }}"
+        foreground_templates:
+          - "{{ if gt .Ahead 0 }}p:green_lighter{{ end }}"
+          - "{{ if gt .Behind 0 }}p:red_lighter{{ end }}"
+      - type: git
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: 
+        background: p:orange
+        foreground: p:orange_darker
+        template: "{{ if or (.Working.Changed) (.Staging.Changed) }}{{ .UpstreamIcon }} {{ .HEAD }}{{ if .BranchStatus }} {{
+          .BranchStatus }}{{ end }} {{ end }}"
+        properties:
+          branch_icon: " "
+          fetch_status: true
+          fetch_upstream_icon: true
+        background_templates:
+          - "{{ if gt .Ahead 0 }}p:green{{ end }}"
+          - "{{ if gt .Behind 0 }}p:red{{ end }}"
+        foreground_templates:
+          - "{{ if gt .Ahead 0 }}p:green_lighter{{ end }}"
+          - "{{ if gt .Behind 0 }}p:red_lighter{{ end }}"
+      - type: git
+        style: diamond
+        trailing_diamond: " "
+        background: p:yellow
+        foreground: p:yellow_darker
+        template: "{{ if or (.Working.Changed) (.Staging.Changed) }} {{ if .Working.Changed }} {{ .Working.String }}{{ end }}{{
+          if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{
+          end }} {{ end }}"
+        properties:
+          branch_icon: " "
+          fetch_status: true
+          fetch_upstream_icon: true
+      - type: terraform
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: " "
         background: p:purple
         foreground: p:purple_lighter
-        template: " {{ .Name }} "
+        template: "  {{ .WorkspaceName }} "
+      - type: project
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: 
+        background: p:gray
+        foreground: p:gray_light
+        template: "{{ if .Version }}  {{ .Version }} {{ end }}"
+      - type: dotnet
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: " "
+        background: p:purple
+        foreground: p:purple_lighter
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }}  {{ if .Unsupported }}{{ else }}{{ .Full }}{{ end }}
+          {{ end }}"
+      - type: dotnet
+        style: diamond
+        trailing_diamond: " "
+        background: p:purple
+        foreground: p:purple_lighter
+        template: "{{ if and (.Segments.Project.Version) (.Full) }}  {{ if .Unsupported }}{{ else }}{{ .Full }}{{ end }} {{
+          end }}"
+      - type: go
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: " "
+        background: p:teal
+        foreground: p:teal_lighter
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }}  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end
+          }} {{ end }}"
+      - type: go
+        style: diamond
+        trailing_diamond: " "
+        background: p:teal
+        foreground: p:teal_lighter
+        template: "{{ if and (.Segments.Project.Version) (.Full) }}  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}
+          {{ end }}"
+      - type: java
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: " "
+        background: p:orange
+        foreground: p:orange_darker
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }}  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end
+          }} {{ end }}"
+      - type: java
+        style: diamond
+        trailing_diamond: " "
+        background: p:orange
+        foreground: p:orange_darker
+        template: "{{ if and (.Segments.Project.Version) (.Full) }}  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}
+          {{ end }}"
+      - type: node
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: 
+        background: p:green
+        foreground: p:green_lighter
+        template: "{{ if and (not .Segments.Project.Version) (.PackageManagerIcon) }}   {{ .Major }}.{{ .Minor }} {{ end }}"
+        properties:
+          fetch_package_manager: true
+      - type: node
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: " "
+        background: p:green
+        foreground: p:green_lighter
+        template: "{{ if and (not .Segments.Project.Version) (not .PackageManagerIcon) }}   {{ .Major }}.{{ .Minor }} {{ end }}"
+        properties:
+          fetch_package_manager: true
+      - type: node
+        style: powerline
+        powerline_symbol: 
+        background: p:green
+        foreground: p:green_lighter
+        template: "{{ if and (.Segments.Project.Version) (.PackageManagerIcon) }}   {{ .Major }}.{{ .Minor }} {{ end }}"
+        properties:
+          fetch_package_manager: true
+      - type: node
+        style: diamond
+        trailing_diamond: " "
+        background: p:green
+        foreground: p:green_lighter
+        template: "{{ if and (.Segments.Project.Version) (not .PackageManagerIcon) }}   {{ .Major }}.{{ .Minor }} {{ end }}"
+        properties:
+          fetch_package_manager: true
+      - type: node
+        style: diamond
+        trailing_diamond: " "
+        background: p:gray_light
+        foreground: p:gray
+        template: "{{ if .PackageManagerIcon }} {{ .PackageManagerIcon }} {{ end }}"
+        properties:
+          fetch_package_manager: true
+        background_templates:
+          - "{{ if eq .PackageManagerName \"npm\" }}p:red_light{{ end }}"
+          - "{{ if eq .PackageManagerName \"yarn\" }}p:blue_light{{ end }}"
+          - "{{ if eq .PackageManagerName \"pnpm\" }}p:orange_light{{ end }}"
+          - "{{ if eq .PackageManagerName \"bun\" }}p:yellow_light{{ end }}"
+        foreground_templates:
+          - "{{ if eq .PackageManagerName \"npm\" }}p:red{{ end }}"
+          - "{{ if eq .PackageManagerName \"yarn\" }}p:blue{{ end }}"
+          - "{{ if eq .PackageManagerName \"pnpm\" }}p:orange{{ end }}"
+          - "{{ if eq .PackageManagerName \"bun\" }}p:yellow{{ end }}"
+      - type: perl
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: " "
+        background: p:blue
+        foreground: p:blue_lighter
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }}  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end
+          }} {{ end }}"
+      - type: perl
+        style: diamond
+        trailing_diamond: " "
+        background: p:blue
+        foreground: p:blue_lighter
+        template: "{{ if and (.Segments.Project.Version) (.Full) }}  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}
+          {{ end }}"
+      - type: php
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: " "
+        background: p:purple
+        foreground: p:purple_lighter
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }}  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end
+          }} {{ end }}"
+      - type: php
+        style: diamond
+        trailing_diamond: " "
+        background: p:purple
+        foreground: p:purple_lighter
+        template: "{{ if and (.Segments.Project.Version) (.Full) }}  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}
+          {{ end }}"
+      - type: python
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: " "
+        background: p:blue
+        foreground: p:blue_lighter
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }} {{ if .Error }}{{ .Error }}{{ else }} {{ .Full }}{{ end
+          }}{{ end }}"
+      - type: python
+        style: diamond
+        trailing_diamond: " "
+        background: p:blue
+        foreground: p:blue_lighter
+        template: "{{ if and (.Segments.Project.Version) (.Full) }} {{ if .Error }}{{ .Error }}{{ else }} {{ .Full }}{{ end
+          }}{{ end }}"
+      - type: rust
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: " "
+        background: p:red
+        foreground: p:red_lighter
+        template: "{{ if and (not .Segments.Project.Version) (.Full) }}  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end
+          }} {{ end }}"
+      - type: rust
+        style: diamond
+        trailing_diamond: " "
+        background: p:red
+        foreground: p:red_lighter
+        template: "{{ if and (.Segments.Project.Version) (.Full) }}  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}
+          {{ end }}"
+      - type: aws
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: " "
+        background: p:orange
+        foreground: p:orange_darker
+        template: "  {{ .Profile }} "
+        properties:
+          display_default: false
+      - type: az
+        style: diamond
+        leading_diamond: 
+        trailing_diamond: " "
+        background: p:blue
+        foreground: p:blue_lighter
+        template: "  {{ .Name }} "

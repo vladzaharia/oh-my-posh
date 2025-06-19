@@ -108,7 +108,7 @@ function filterBlocks(blocks: unknown, variant: BuildVariant): unknown {
         return true;
       }
 
-      const blockObj = block as { type?: string };
+      const blockObj = block as { type?: string; newline?: boolean };
 
       // Filter based on block type (prompt vs rprompt)
       if (blockObj.type === 'rprompt' && !variant.include.right_prompt) {
@@ -116,6 +116,11 @@ function filterBlocks(blocks: unknown, variant: BuildVariant): unknown {
       }
 
       if (blockObj.type === 'prompt' && !variant.include.left_prompt) {
+        return false;
+      }
+
+      // Filter out newline blocks if excluded
+      if (blockObj.newline === true && variant.exclude?.newline_blocks === true) {
         return false;
       }
 

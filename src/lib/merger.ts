@@ -45,7 +45,8 @@ export function mergeConfigs(configs: YamlConfig[]): YamlConfig {
   // Now handle blocks specially - consolidate by alignment
   const allBlocks: unknown[] = [];
   const promptSegments: unknown[] = [];
-  const rpromptSegments: unknown[] = [];
+  const promptNewlineSegments: unknown[] = [];
+  const rightPromptSegments: unknown[] = [];
 
   configs.forEach(config => {
     if (config['blocks'] && Array.isArray(config['blocks'])) {
@@ -54,24 +55,33 @@ export function mergeConfigs(configs: YamlConfig[]): YamlConfig {
         if (
           blockObj['type'] === 'prompt' &&
           blockObj['alignment'] === 'left' &&
-          Array.isArray(blockObj['segments'])
+          Array.isArray(blockObj['segments']) &&
+          !blockObj['newline'] // Only merge first line left prompts
         ) {
           promptSegments.push(...(blockObj['segments'] as unknown[]));
         } else if (
-          blockObj['type'] === 'rprompt' &&
-          blockObj['alignment'] === 'right' &&
+          blockObj['type'] === 'prompt' &&
+          blockObj['alignment'] === 'left' &&
+          Array.isArray(blockObj['segments']) &&
+          blockObj['newline'] === true // Merge second line left prompts
+        ) {
+          promptNewlineSegments.push(...(blockObj['segments'] as unknown[]));
+        } else if (
+          ((blockObj['type'] === 'rprompt' && blockObj['alignment'] === 'right') ||
+           (blockObj['type'] === 'prompt' && blockObj['alignment'] === 'right')) &&
           Array.isArray(blockObj['segments'])
         ) {
-          rpromptSegments.push(...(blockObj['segments'] as unknown[]));
+          rightPromptSegments.push(...(blockObj['segments'] as unknown[]));
         } else {
-          // Keep other block types as-is
+          // Keep other block types as-is (including blocks with other newline configurations)
           allBlocks.push(block);
         }
       });
     }
   });
 
-  // Create consolidated blocks
+  // Create consolidated blocks in correct order
+  // 1. First line left prompt
   if (promptSegments.length > 0) {
     allBlocks.push({
       type: 'prompt',
@@ -80,12 +90,23 @@ export function mergeConfigs(configs: YamlConfig[]): YamlConfig {
     });
   }
 
-  if (rpromptSegments.length > 0) {
+  // 2. Right prompt (on same line as left prompt)
+  if (rightPromptSegments.length > 0) {
     allBlocks.push({
-      type: 'rprompt',
+      type: 'prompt',
       alignment: 'right',
       overflow: 'hide',
-      segments: rpromptSegments,
+      segments: rightPromptSegments,
+    });
+  }
+
+  // 3. Second line left prompt (after right prompt)
+  if (promptNewlineSegments.length > 0) {
+    allBlocks.push({
+      type: 'prompt',
+      alignment: 'left',
+      newline: true,
+      segments: promptNewlineSegments,
     });
   }
 

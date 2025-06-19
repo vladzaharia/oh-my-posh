@@ -1,5 +1,5 @@
 blocks:
-  - type: rprompt
+  - type: prompt
     alignment: right
     overflow: hide
     segments:

@@ -5,3 +5,8 @@ final_space: true
 shell_integration: true
 enable_cursor_positioning: true
 tooltips_action: replace
+iterm_features:
+  - prompt_mark
+  - current_dir
+  - remote_host
+async: true
