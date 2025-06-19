@@ -7,7 +7,6 @@ iterm_features:
   - prompt_mark
   - current_dir
   - remote_host
-async: true
 palette:
   transparent: transparent
   gray_lighter: "#eff2f6"

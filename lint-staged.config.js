@@ -6,5 +6,8 @@ export default {
     "config/**/*.{yml,yaml}": [
       "prettier --write"
     ],
-    "*.{ts,yml,yaml}": () => "yarn build"
+    "*.{ts,yml,yaml}": [
+      () => "yarn build",
+      "git add"
+    ]
 }
