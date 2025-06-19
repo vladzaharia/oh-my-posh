@@ -9,4 +9,3 @@ iterm_features:
   - prompt_mark
   - current_dir
   - remote_host
-async: true

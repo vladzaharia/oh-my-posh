@@ -1,5 +1,5 @@
 blocks:
-  # Right prompt segments (matching Starship right_format order)
+  # Right prompt segments
   - type: prompt
     alignment: right
     overflow: hide

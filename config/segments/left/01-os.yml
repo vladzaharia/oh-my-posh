@@ -1,5 +1,5 @@
 blocks:
-  # Left prompt segments (matching Starship format order)
+  # Left prompt segments
   - type: prompt
     alignment: left
     segments:
