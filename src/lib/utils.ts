@@ -9,7 +9,7 @@ export function getRepoRoot(): string {
   // Find the directory containing package.json by walking up from current file
   let currentDir = import.meta.url.replace('file://', '');
   currentDir = currentDir.substring(0, currentDir.lastIndexOf('/'));
-  
+
   while (currentDir !== '/') {
     try {
       const packageJsonPath = join(currentDir, 'package.json');
@@ -19,7 +19,7 @@ export function getRepoRoot(): string {
       currentDir = currentDir.substring(0, currentDir.lastIndexOf('/'));
     }
   }
-  
+
   // Fallback to process.cwd() if package.json not found
   return process.cwd();
 }

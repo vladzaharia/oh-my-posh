@@ -22,11 +22,10 @@ blocks:
             bash: $
             shell: 󰈅
             zsh: 
-            pwsh:  
-            cmd:  
+            pwsh: 
+            cmd: 
         foreground_templates:
-          - '{{ if .Root }}p:orange{{ end }}'
+          - "{{ if .Root }}p:orange{{ end }}"
           - '{{ if eq .Shell "pwsh" }}p:blue{{ end }}'
           - '{{ if eq .Shell "bash" }}p:green{{ end }}'
           - '{{ if eq .Shell "zsh" }}p:magenta{{ end }}'
-            

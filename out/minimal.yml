@@ -63,6 +63,19 @@ transient_prompt:
     - "{{ if eq .OS \"darwin\" }}p:purple_dark{{ end }}"
     - "{{ if eq .OS \"linux\" }}p:yellow_dark{{ end }}"
     - "{{ if eq .OS \"windows\" }}p:blue_dark{{ end }}"
+description: Minimal Oh My Posh configuration for fallback scenarios
+filename: minimal.yml
+include:
+  main_config: true
+  palette: true
+  transient: true
+  left_prompt: true
+  right_prompt: false
+  tooltips: false
+exclude:
+  segments:
+    - battery
+  newline_blocks: true
 blocks:
   - type: prompt
     alignment: left

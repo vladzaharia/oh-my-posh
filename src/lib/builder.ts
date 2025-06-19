@@ -5,12 +5,12 @@ import type { YamlConfig, BuildVariant, BuildConfig } from '../types/index.js';
 import { getRepoRoot } from './utils.js';
 
 /**
- * Load build configuration from build/ directory
+ * Load build configuration from config/_build/ directory
  */
 export function loadBuildConfig(): BuildConfig {
   try {
     const repoRoot = getRepoRoot();
-    const buildDir = join(repoRoot, 'build');
+    const buildDir = join(repoRoot, 'config', '_build');
     const variants: Record<string, BuildVariant> = {};
 
     // Load all variant files
@@ -31,7 +31,7 @@ export function loadBuildConfig(): BuildConfig {
     }
 
     if (Object.keys(variants).length === 0) {
-      throw new Error('No build variants found in build/ directory');
+      throw new Error('No build variants found in config/_build/ directory');
     }
 
     return {

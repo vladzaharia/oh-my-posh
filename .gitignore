@@ -7,11 +7,6 @@ dist/
 # Temporary build files
 tmp/**
 
-# Generated YAML configurations
-out/**
-!out/full.yml
-!out/minimal.yml
-
 # Yarn cache (if using zero-installs, uncomment the line below)
 # .yarn/cache
 

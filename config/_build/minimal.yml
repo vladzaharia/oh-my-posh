@@ -13,6 +13,6 @@ include:
 exclude:
   # Exclude specific segments from left prompt
   segments:
-    - "battery"  # Remove battery segment from left prompt
+    - "battery" # Remove battery segment from left prompt
   # Exclude second line prompts (newline blocks)
   newline_blocks: true

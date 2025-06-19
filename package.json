@@ -79,7 +79,8 @@
     "release:full": "yarn release:prepare && yarn release:upload && yarn release:promote",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"config/**/*.{yml,yaml}\""
+    "format": "prettier --write \"src/**/*.ts\" \"config/**/*.{yml,yaml}\"",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",

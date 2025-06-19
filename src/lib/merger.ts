@@ -68,7 +68,7 @@ export function mergeConfigs(configs: YamlConfig[]): YamlConfig {
           promptNewlineSegments.push(...(blockObj['segments'] as unknown[]));
         } else if (
           ((blockObj['type'] === 'rprompt' && blockObj['alignment'] === 'right') ||
-           (blockObj['type'] === 'prompt' && blockObj['alignment'] === 'right')) &&
+            (blockObj['type'] === 'prompt' && blockObj['alignment'] === 'right')) &&
           Array.isArray(blockObj['segments'])
         ) {
           rightPromptSegments.push(...(blockObj['segments'] as unknown[]));
