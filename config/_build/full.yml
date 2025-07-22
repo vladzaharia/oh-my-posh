@@ -9,5 +9,5 @@ include:
   transient: true
   left_prompt: true
   right_prompt: true
-  tooltips: true
+  tooltips: false
 exclude: []
